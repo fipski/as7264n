@@ -1,6 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import smbus
 import time
+import colormath
+
 
 # I2C-Adresse des MCP23017
 mux_addr = 0x70
@@ -13,9 +15,9 @@ def setMux(i):
 
 def setup_col_sens():
     dev_id = bus.read_byte_data(sens_addr,0x10)
-    print "Device id: " + str(dev_id)
+    print("Device id: " + str(dev_id))
     dev_ver = bus.read_byte_data(sens_addr,0x10)
-    print "Device Version: " + str(dev_ver)
+    print("Device Version: " + str(dev_ver))
 
     # write device configuration
     bus.write_byte_data(sens_addr,0x70,0x8A) #Write dev_conf1
@@ -67,7 +69,7 @@ def setWtime(wtime): #set wait time, shoud be 0-256
     bus.write_byte_data(sens_addr,0xDA,wtime)
 
 def autoZero():
-    print "not done yet"
+    print("not done yet")
     # TODO
 
 def startConversion():
@@ -104,23 +106,45 @@ def getChannelX():
 
 
 # test stuff
+setMux(0)
 setup_col_sens()
 temp = getTemp()
-print "Temperature: " + str(temp)
+print("Temperature: " + str(temp))
 setIntTime(0)
-setGain(0b00)
-setWtime(128)
+setGain(0b01)
+setWtime(0)
 setBank(1)
 autoZero()
 startConversion()
 latchData()
-print "Channel N: " + str(getChannelN())
-print "Channel X: " + str(getChannelX())
-print "Channel Y: " + str(getChannelY())
-print "Channel Z: " + str(getChannelZ())
 
+N = getChannelN()
+X = getChannelX()
+Y = getChannelY()
+Z = getChannelZ()
 
+print("Channel N: " + str(N) )
+print("Channel X: " + str(X) )
+print("Channel Y: " + str(Y) )
+print("Channel Z: " + str(Z) )
 
+maximum = max(X, Y, Z)
+x = X/maximum
+y = Y/maximum
+z = Z/maximum
+
+print("Channel x: " + str(x) )
+print("Channel y: " + str(y) )
+print("Channel z: " + str(z) )
+
+from colormath.color_objects import XYZColor, HSLColor, AdobeRGBColor
+from colormath.color_conversions import convert_color
+xyz = XYZColor(x, y, z)
+rgb = convert_color(xyz, AdobeRGBColor)
+
+print("R: " + str(rgb.rgb_r))
+print("G: " + str(rgb.rgb_g))
+print("B: " + str(rgb.rgb_b))
 data_clr = 0xFA
 
 led_drv = 0xEA
