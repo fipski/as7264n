@@ -3,10 +3,20 @@ import smbus
 import time
 import colormath
 
-
 # I2C-Adresse des MCP23017
 mux_addr = 0x70
 sens_addr = 0x49
+
+class XYZN(object):
+    def __init__(self, X, Y, Z, N):
+        self.X = X
+        self.Y = Y
+        self.Z = Z
+        self.N = N
+    def printXYZ(self):
+        print("X: " + str(self.X))
+        print("Y: " + str(self.Y))
+        print("Z: " + str(self.Z))
 
 # Erzeugen einer I2C-Instanz und Oeffnen des Busses
 bus = smbus.SMBus(2)
@@ -102,53 +112,13 @@ def getChannelZ():
 def getChannelX():
     return getChannel(0xEE)
 
-
-
-
-# test stuff
-setMux(0)
-setup_col_sens()
-temp = getTemp()
-print("Temperature: " + str(temp))
-setIntTime(0)
-setGain(0b01)
-setWtime(0)
-setBank(1)
-autoZero()
-startConversion()
-latchData()
-
-N = getChannelN()
-X = getChannelX()
-Y = getChannelY()
-Z = getChannelZ()
-
-print("Channel N: " + str(N) )
-print("Channel X: " + str(X) )
-print("Channel Y: " + str(Y) )
-print("Channel Z: " + str(Z) )
-
-maximum = max(X, Y, Z)
-x = X/maximum
-y = Y/maximum
-z = Z/maximum
-
-print("Channel x: " + str(x) )
-print("Channel y: " + str(y) )
-print("Channel z: " + str(z) )
-
-from colormath.color_objects import XYZColor, HSLColor, AdobeRGBColor
-from colormath.color_conversions import convert_color
-xyz = XYZColor(x, y, z)
-rgb = convert_color(xyz, AdobeRGBColor)
-
-print("R: " + str(rgb.rgb_r))
-print("G: " + str(rgb.rgb_g))
-print("B: " + str(rgb.rgb_b))
-data_clr = 0xFA
-
-led_drv = 0xEA
-led_ind = 0x84
-
-
-
+def doMeasure(bank):
+    setBank(bank)
+    # autoZero()
+    startConversion()
+    latchData()
+    N = getChannelN()
+    X = getChannelX()
+    Y = getChannelY()
+    Z = getChannelZ()
+    return X, Y, Z, N
