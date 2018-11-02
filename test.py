@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import colsens
+import colormath
 
 # test setup and config
 colsens.setMux(0)
@@ -10,13 +11,13 @@ print("Temperature: " + str(temp))
 colsens.setIntTime(0)
 colsens.setGain(0b10)
 colsens.setWtime(0)
-colsens.setBank(1)
+colsens.setBank(0)
 colsens.autoZero()
 
 
+# calibrate to typical conditions
+# careful: typical values from the datasheet, no defined white point.
 
-
-#calibrate to typical conditions
 def calibrate(X, Y, Z):
     X=X/7.7
     Y=Y/8.6

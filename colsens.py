@@ -1,7 +1,15 @@
 #!/usr/bin/python3
+
+# quick script to read values.
+# TODO
+# class for sensor
+# flexible i2c bus
+#
+# needs smbus
+
+
 import smbus
 import time
-import colormath
 
 mux_addr = 0x70      # i2c Adresse des MCP23017
 sens_addr = 0x49     # i2c Adresse des as7264n
@@ -53,17 +61,16 @@ def setup_col_sens():
 
 # config, get temperature
 def getTemp():
-    tmp_config = 0xD3
+    tmp_config = 0xD3 # TMP_CONFIG Address
     bus.write_byte_data(sens_addr,tmp_config,0x24) # write 0x24 to get temp
-    r = bus.read_byte_data(sens_addr,tmp_config)
-    if r == 0x84:
-        temp = bus.read_byte_data(sens_addr,0xD2) # read low byte
-        temp  |= bus.read_byte_data(sens_addr,0xD1) << 2 # read hi byte
-        temp = ((0.7604-((temp*2.048)/1024))/(2.046*0.001))-40 # convert to C
-        bus.write_byte_data(sens_addr,tmp_config,0x00) # set to idle
-        return temp
-    else:
-        raise ValueError('temp measurement not ready') # temp measurement not ready
+    r = 0
+    while r != 0x84: # check if temperature measurement is ready
+        r = bus.read_byte_data(sens_addr,tmp_config)
+    temp = bus.read_byte_data(sens_addr,0xD2) # read low byte
+    temp  |= bus.read_byte_data(sens_addr,0xD1) << 2 # read hi byte
+    temp = ((0.7604-((temp*2.048)/1024))/(2.046*0.001))-40 # convert to C
+    bus.write_byte_data(sens_addr,tmp_config,0x00) # set to idle
+    return temp
 
 def setIntTime(timeval): # set int time, should be 0-256
     if 0 <= timeval <= 256:

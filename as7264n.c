@@ -1,5 +1,4 @@
 /* @file as7264n.c
- * @author Philipp Sauerbrunn
  *
  * @brief AS7264N Color Sensor driver. Multiple AS7264N on a TCA9548A i2c Mux.
  * */
