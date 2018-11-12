@@ -72,15 +72,15 @@ def getTemp():
     bus.write_byte_data(sens_addr,tmp_config,0x00) # set to idle
     return temp
 
-def setIntTime(timeval): # set int time, should be 0-256
-    if 0 <= timeval <= 256:
+def setIntTime(timeval): # set int time, should be 0-255
+    if 0 <= timeval <= 255:
     # t = (256 - timeval) * 2.8
         try:
             bus.write_byte_data(sens_addr,0xD9,timeval)
         except IOError, err:
             print err
     else:
-        raise ValueError('time must be 0...256')
+        raise ValueError('time must be 0...255')
 
 
 def setGain(gain): # set gail level, 0b00 to 0b11
@@ -96,12 +96,12 @@ def setBank(bank): # set bank, 0 or 1
     else:
         raise ValueError('bank must be 0...1')
 
-def setWtime(wtime): #set wait time, shoud be 0-256
+def setWtime(wtime): #set wait time, shoud be 0-255
     # t = (256 - timeval) * 2.8
-    if 0 <= wtime <= 256:
+    if 0 <= wtime <= 255:
         bus.write_byte_data(sens_addr,0xDA,wtime)
     else:
-        raise ValueError('wtime must be 0...256')
+        raise ValueError('wtime must be 0...255')
 
 def autoZero():
     print("not done yet")
