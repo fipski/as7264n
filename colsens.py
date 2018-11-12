@@ -75,7 +75,10 @@ def getTemp():
 def setIntTime(timeval): # set int time, should be 0-256
     if 0 <= timeval <= 256:
     # t = (256 - timeval) * 2.8
-        bus.write_byte_data(sens_addr,0xD9,timeval)
+        try:
+            bus.write_byte_data(sens_addr,0xD9,timeval)
+        except IOError, err:
+            print err
     else:
         raise ValueError('time must be 0...256')
 
